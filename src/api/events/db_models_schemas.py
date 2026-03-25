@@ -4,11 +4,9 @@ from datetime import datetime,timezone
 # import sqlmodel
 from sqlalchemy import DateTime, Column
 from timescaledb import TimescaleModel
-# from timescaledb.utils import get_utc_now
+from timescaledb.utils import get_utc_now
 
-def get_utc_now():
-    # ignore the timezone of the server follow the utc/gmt time 
-    return datetime.now(timezone.utc).replace(tzinfo=timezone.utc)    
+
 
 # the entity that will be stored in the database--
 #  only postgres -- use SQLModel
@@ -26,7 +24,7 @@ class EventModel(TimescaleModel, table=True):
     __chunk_time_interval__ = "INTERVAL 1 day"
     __drop_after__ = "INTERVAL 3 months"
 
-
+# the simulation scripts in ipynb sends the website visits
 class EventCreateSchema(SQLModel):
     page: str
     user_agent: Optional[str] = Field(default="", index=True) # browser
