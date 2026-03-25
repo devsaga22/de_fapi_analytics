@@ -13,28 +13,40 @@ def get_utc_now():
 # the entity that will be stored in the database--
 #  only postgres -- use SQLModel
 # timeseries db-- use the timescaleModel
-class EventModel(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
-    name: Optional[str] = ""
-    description: Optional[str] = ""
-    created_at: datetime = Field(default_factory=get_utc_now,
-                                sa_type=DateTime(timezone=True),
-                                nullable=False)
-    updated_at: datetime = Field(default_factory=get_utc_now,
-                                sa_type=DateTime(timezone=True),
-                                nullable=False)
+# page visits at any given time
 
+class EventModel(TimescaleModel, table=True):
+    page: str = Field(index=True) # /about, /contact, # pricing
+    user_agent: Optional[str] = Field(default="", index=True) # browser
+    ip_address: Optional[str] = Field(default="", index=True)
+    referrer: Optional[str] = Field(default="", index=True) 
+    session_id: Optional[str] = Field(index=True)
+    duration: Optional[int] = Field(default=0) 
 
+    __chunk_time_interval__ = "INTERVAL 1 day"
+    __drop_after__ = "INTERVAL 3 months"
 
 
 class EventCreateSchema(SQLModel):
-    name: str
-    description: Optional[str] = Field(default="")
-# we allow only description to be updated for now, DTO
-class EventUpdateSchema(SQLModel):
-    # name: Optional[str] = None
-    description: Optional[str] = None
+    page: str
+    user_agent: Optional[str] = Field(default="", index=True) # browser
+    ip_address: Optional[str] = Field(default="", index=True)
+    referrer: Optional[str] = Field(default="", index=True) 
+    session_id: Optional[str] = Field(index=True)
+    duration: Optional[int] = Field(default=0) 
+
+class EventListSchema(SQLModel):
+    results: List[EventModel]
+    count: int
 # the return type of the get all events api
 class EventListSchema(SQLModel):
     events: List[EventModel]
+    count: int
+
+class EventBucketSchema(SQLModel):
+    bucket: datetime
+    page: str
+    ua: Optional[str] = ""
+    operating_system: Optional[str] = ""
+    avg_duration: Optional[float] = 0.0
     count: int
