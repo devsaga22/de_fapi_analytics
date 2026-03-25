@@ -6,8 +6,8 @@ import timescaledb
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set, please set it in config.py")
 try:
-    engine= create_engine(DATABASE_URL, echo=True)
-    # engine=timescaledb.create_engine(DATABASE_URL,timezone=DB_TIMEZONE)
+    # engine= create_engine(DATABASE_URL, echo=True)
+    engine=timescaledb.create_engine(DATABASE_URL,timezone=DB_TIMEZONE)
 except Exception as e:
     print(f"Error creating engine: {e}, check if db url is set correctly and if db is running")
 
@@ -15,8 +15,8 @@ except Exception as e:
 def init_db():
     print("creating db") 
     SQLModel.metadata.create_all(engine)
-    # print("creating hypertables")
-    # timescaledb.metadata.create_all(engine)
+    print("creating hypertables")
+    timescaledb.metadata.create_all(engine)
 
 
 def get_session():
