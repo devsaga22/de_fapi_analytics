@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+
+
+
+# --- Environment & Secrets (CRITICAL) ---
+.env
+.env.compose
+.env.*
+
+
+# --- Docker & Database ---
+# This prevents your 14GB NASA data or local DB from being uploaded
+postgres_data/
+timescale_data/
+*.db
+*.sqlite3
+
+# --- IDE & System ---
+.vscode/
+.idea/
+.DS_Store
+*.log
