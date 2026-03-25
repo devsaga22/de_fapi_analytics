@@ -1,0 +1,36 @@
+services:
+  api:
+    
+    build: .
+    # image: analytics_api:v1
+    volumes:
+      - ./src:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      time_dbservice:
+        condition: service_healthy
+    env_file:
+      - .env.compose  # <--- This pushes the vars INTO the container
+    # environment:
+    #   DATABASE_URL: ${DATABASE_URL}
+
+  time_dbservice:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tms_analytics_db
+    ports:
+      - "5432:5432"
+      # windows app port : docker container ports
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d tms_analytics_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+
+volumes:
+  timescale_data:
