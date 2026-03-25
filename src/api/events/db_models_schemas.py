@@ -33,9 +33,7 @@ class EventCreateSchema(SQLModel):
     session_id: Optional[str] = Field(index=True)
     duration: Optional[int] = Field(default=0) 
 
-class EventListSchema(SQLModel):
-    results: List[EventModel]
-    count: int
+
 # the return type of the get all events api
 class EventListSchema(SQLModel):
     events: List[EventModel]
